@@ -6,6 +6,8 @@ public class Player : MonoBehaviour
 {
 
     public float moveSpeed;
+    public LayerMask solid;
+    public LayerMask grass;
 
     bool isMoving;
     Vector2 input;
@@ -36,8 +38,11 @@ public class Player : MonoBehaviour
                 targetPos.x += input.x;
                 targetPos.y += input.y;
 
-                // coroutine to move the player in the tilemap
-                StartCoroutine(Move(targetPos));
+                if (isWalkable(targetPos))
+                {
+                    // coroutine to move the player in the tilemap
+                    StartCoroutine(Move(targetPos));
+                }
             }
         }
         animator.SetBool("isMoving", isMoving);
@@ -55,5 +60,27 @@ public class Player : MonoBehaviour
         transform.position = targetPos;
 
         isMoving = false;
+
+        CheckForEncounters();
+    }
+
+    private bool isWalkable(Vector3 targetPos)
+    {
+        if(Physics2D.OverlapCircle(targetPos,0.1f,solid) != null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private void CheckForEncounters()
+    {
+        if(Physics2D.OverlapCircle(transform.position,0.2f,grass) != null)
+        {
+            if(Random.Range(1,101)<10)
+            {
+                Debug.Log("Encountered a wild Teras!");
+            }
+        }
     }
 }
