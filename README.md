@@ -27,3 +27,6 @@ The project is Turn Based RPG game. Having elements of both.
 - [ ] Create a perk class to modify Teras
 - [ ] Create Sprites for Lab
 - [ ] Make and implement an engaging story
+
+## Markdown Language Link
+[Markdown Language](https://guides.github.com/features/mastering-markdown/)
