@@ -22,6 +22,8 @@ public class Teras : ScriptableObject
     [SerializeField] int defense;
     [SerializeField] int speed;
 
+    [SerializeField] List<SkillSet> skillSets;
+
     public string Name
     {
         get { return name; }
@@ -62,8 +64,27 @@ public class Teras : ScriptableObject
     {
         get { return speed; }
     }
+    public List<SkillSet> SkillSets
+    {
+        get { return skillSets; }
+    }
 }
 
+[System.Serializable]
+public class SkillSet
+{
+    [SerializeField] SkillBase skillBase;
+    [SerializeField] int level;
+
+    public SkillBase SkillBase
+    {
+        get { return skillBase; }
+    }
+    public int Level
+    {
+        get { return level; }
+    }
+}
 public enum elements
 {
     None,

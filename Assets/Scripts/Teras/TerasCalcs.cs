@@ -7,10 +7,24 @@ public class TerasCalcs
     Teras _baseTeras;
     int level;
 
+    public int CurrentHealth { get; set; }
+    public List<SkillCalc> Skills { get; set; }
+
     public TerasCalcs(Teras tBase,int tLevel)
     {
         _baseTeras = tBase;
         level = tLevel;
+        CurrentHealth = _baseTeras.Health;
+        
+        Skills = new List<SkillCalc>();
+        foreach(var skill in _baseTeras.SkillSets)
+        {
+            if (skill.Level <= level)
+                Skills.Add(new SkillCalc(skill.SkillBase));
+
+            if (Skills.Count >= 4)
+                break;
+        }
     }
 
     public int CalculateAttackStat
