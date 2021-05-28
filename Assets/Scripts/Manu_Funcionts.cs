@@ -5,8 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class Manu_Funcionts : MonoBehaviour
 {
-    int play_game_scene;
-
     public void Play_Game()
     {
         // TODO: CREATE NEW SAVE FILE
@@ -19,6 +17,7 @@ public class Manu_Funcionts : MonoBehaviour
         // TODO: LOAD EXISTING SAVE FILE
     }
 
+    // Quit application (doesnt quit on editor!)
     public void Exit_Game()
     {
         Application.Quit();

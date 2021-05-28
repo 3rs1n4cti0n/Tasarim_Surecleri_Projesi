@@ -4,22 +4,33 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
+    #region data
+    // how fast the player will move per DeltaTime
     public float moveSpeed;
+
+    // Layers
     public LayerMask solid;
     public LayerMask grass;
 
+    // check for animation
     bool isMoving;
+
+    // check for input
     Vector2 input;
+    
+    // to animate our player
     Animator animator;
 
+    #endregion
+
+    // initialize animator for animation of player
     public void Awake()
     {
         animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
-    // checks for movement input
+    // checks for inputs
     void Update()
     {
         if(!isMoving)
@@ -31,6 +42,7 @@ public class Player : MonoBehaviour
 
             if(input != Vector2.zero)
             {
+                // give results to animator to show animation
                 animator.SetFloat("X", input.x);
                 animator.SetFloat("Y", input.y);
 
@@ -45,9 +57,11 @@ public class Player : MonoBehaviour
                 }
             }
         }
+        // For animations
         animator.SetBool("isMoving", isMoving);
     }
 
+    // Move the player using Coroutine
     IEnumerator Move(Vector3 targetPos)
     {
         isMoving = true;
@@ -64,6 +78,7 @@ public class Player : MonoBehaviour
         CheckForEncounters();
     }
 
+    // check if the target tile is walkable
     private bool isWalkable(Vector3 targetPos)
     {
         if(Physics2D.OverlapCircle(targetPos,0.1f,solid) != null)
@@ -73,6 +88,7 @@ public class Player : MonoBehaviour
         return true;
     }
 
+    // function to check for encounters
     private void CheckForEncounters()
     {
         if(Physics2D.OverlapCircle(transform.position,0.2f,grass) != null)

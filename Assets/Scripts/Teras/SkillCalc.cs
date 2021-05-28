@@ -7,6 +7,7 @@ public class SkillCalc
     public SkillBase baseSkill { get; set; }
     public int UseLeft { get; set; }
 
+    // initialize store data
     public SkillCalc(SkillBase tBase)
     {
         baseSkill = tBase;

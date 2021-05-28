@@ -5,14 +5,19 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Teras", menuName ="Teras/New Teras")]
 public class Teras : ScriptableObject
 {
+    #region data
+    /* SerializeField makes it so that we can see the data in the inspector */
+    
     [SerializeField] string name;
     
     [TextArea]
     [SerializeField] string description;
 
+    //Sprites to keep front and back sie of teras
     [SerializeField] Sprite frontSprite;
     [SerializeField] Sprite backSprite;
 
+    // enumarator to keep track of teras elements
     [SerializeField] elements firstElement;
     [SerializeField] elements secondElement;
 
@@ -22,8 +27,12 @@ public class Teras : ScriptableObject
     [SerializeField] int defense;
     [SerializeField] int speed;
 
+    // Every learnable skill a teras can have
     [SerializeField] List<SkillSet> skillSets;
 
+    #endregion
+
+    #region getters
     public string Name
     {
         get { return name; }
@@ -68,8 +77,10 @@ public class Teras : ScriptableObject
     {
         get { return skillSets; }
     }
+    #endregion
 }
 
+// class to hold a skills learn level
 [System.Serializable]
 public class SkillSet
 {
@@ -85,6 +96,8 @@ public class SkillSet
         get { return level; }
     }
 }
+
+// enumarator for types
 public enum elements
 {
     None,

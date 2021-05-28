@@ -5,17 +5,29 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Skill", menuName ="Teras/New Skill")]
 public class SkillBase : ScriptableObject
 {
+    #region data
+    /* SerializeField makes it so that we can see the data in the inspector */
+
     [SerializeField] string name;
 
     [TextArea]
     [SerializeField] string description;
 
+    // keep track of what element is the skill
     [SerializeField] elements skillElement;
-    [SerializeField] int damage;
-    [SerializeField] int accuracy;
-    [SerializeField] int useLeft;
-    private SkillBase skillBase;
 
+    // how much damage does it do
+    [SerializeField] int damage;
+
+    // how accurate it is
+    [SerializeField] int accuracy;
+
+    // how many times it can be used
+    [SerializeField] int useLeft;
+
+    #endregion
+
+    #region getters
     public string Name
     {
         get { return name; }
@@ -40,4 +52,5 @@ public class SkillBase : ScriptableObject
     {
         get { return useLeft; }
     }
+    #endregion
 }
