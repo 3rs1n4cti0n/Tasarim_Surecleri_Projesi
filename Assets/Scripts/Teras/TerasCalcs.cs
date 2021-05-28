@@ -7,13 +7,13 @@ public class TerasCalcs
     #region data
 
     // main teras that is used for fighting
-    Teras _baseTeras;
+    public Teras _baseTeras { get; set; }
 
     // teras level
-    int level;
+    public int level { get; set; }
 
     // current health to calculate when it will go to zero
-    public int CurrentHealth { get; set; }
+    public int Health { get; set; }
 
     // skills that are known by teras
     public List<SkillCalc> Skills { get; set; }
@@ -25,7 +25,7 @@ public class TerasCalcs
     {
         _baseTeras = tBase;
         level = tLevel;
-        CurrentHealth = _baseTeras.Health;
+        Health = CalculateMaxHealthStat;
         
         Skills = new List<SkillCalc>();
         foreach(var skill in _baseTeras.SkillSets)
