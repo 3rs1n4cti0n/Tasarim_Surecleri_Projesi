@@ -9,21 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: Denafi_test
+  m_Script: {fileID: 11500000, guid: cb63e17bba08bc24a936b5748c077cfd, type: 3}
+  m_Name: Denafi
   m_EditorClassIdentifier: Assembly-CSharp::Teras
   name: Denafi
   description: 
-  frontSprite: {fileID: 0}
-  backSprite: {fileID: 0}
+  frontSprite: {fileID: 21300000, guid: 5d51c1f67c824c94eac78e21c6df6419, type: 3}
+  backSprite: {fileID: 21300000, guid: 5d51c1f67c824c94eac78e21c6df6419, type: 3}
   firstElement: 5
   secondElement: 0
   health: 100
-  attack: 60
+  attack: 70
   defense: 70
-  speed: 50
+  speed: 40
   skillSets:
-  - skillBase: {fileID: 11400000, guid: 14ebacad4a2b41e40af8631ce727dfa2, type: 2}
-    level: 5
   - skillBase: {fileID: 11400000, guid: 0bf16d3673ca86d46a888c19f6ae45dc, type: 2}
     level: 3
+  - skillBase: {fileID: 11400000, guid: 14ebacad4a2b41e40af8631ce727dfa2, type: 2}
+    level: 5
