@@ -48,8 +48,6 @@ public class BattleSystem : MonoBehaviour
 
         yield return StartCoroutine(dialogBox.TypeDialog($"Encountered a wild {enemyUnit.teras._baseTeras.Name}."));
 
-        yield return new WaitForSeconds(1f);
-
         PlayerAction();
     }
 
@@ -66,6 +64,59 @@ public class BattleSystem : MonoBehaviour
         dialogBox.EnableActionSelector(false);
         dialogBox.EnableDialogText(false);
         dialogBox.EnableSkillSelector(true);
+    }
+
+    IEnumerator UseSkill()
+    {
+        state = BattleState.Busy;
+        var skill = playerUnit.teras.Skills[currentSkill];
+        yield return dialogBox.TypeDialog($"{playerUnit.teras._baseTeras.Name} used {skill.baseSkill.Name}");
+
+        var damageDetails = enemyUnit.teras.TakeDamage(skill, enemyUnit.teras);
+        yield return enemyHUD.UpdateHP();
+        yield return ShowDamageDetails(damageDetails);
+
+        if (damageDetails.Fainted)
+        {
+            yield return dialogBox.TypeDialog($"{enemyUnit.teras._baseTeras.Name} fainted");
+        }
+        else
+        {
+            StartCoroutine(EnemyUseSkill());
+        }
+    }
+
+    IEnumerator EnemyUseSkill()
+    {
+        state = BattleState.EnemySkill;
+
+        var skill = enemyUnit.teras.RandomSkill();
+        yield return dialogBox.TypeDialog($"{enemyUnit.teras._baseTeras.Name} used {skill.baseSkill.Name}");
+
+        var damageDetails = playerUnit.teras.TakeDamage(skill, playerUnit.teras);
+        yield return playerHUD.UpdateHP();
+        yield return ShowDamageDetails(damageDetails);
+
+        if (damageDetails.Fainted)
+        {
+            yield return dialogBox.TypeDialog($"{playerUnit.teras._baseTeras.Name} fainted");
+        }
+        else
+        {
+            PlayerAction();
+        }
+    }
+
+    IEnumerator ShowDamageDetails(DamageDetails damageDetails)
+    {
+        if (damageDetails.Critical > 1f)
+            yield return dialogBox.TypeDialog("It's a critical hit!");
+
+        if (damageDetails.ElementEffectiveness > 1f)
+            yield return dialogBox.TypeDialog("It's a super effective hit!");
+
+        else if (damageDetails.ElementEffectiveness < 1f)
+            yield return dialogBox.TypeDialog("It was not effective!");
     }
 
     private void Update()
@@ -121,5 +172,12 @@ public class BattleSystem : MonoBehaviour
                 --currentSkill;
         }
         dialogBox.UpdateSkillSelection(currentSkill,playerUnit.teras.Skills[currentSkill]);
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            dialogBox.EnableSkillSelector(false);
+            dialogBox.EnableDialogText(true);
+            StartCoroutine(UseSkill());
+        }
     }
 }
