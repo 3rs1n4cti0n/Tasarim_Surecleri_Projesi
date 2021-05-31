@@ -105,7 +105,37 @@ public enum elements
     Water,
     Electric,
     Air,
-    Grass,
+    Earth,
     Light,
     Dark
+}
+
+public class ElementEffectiveness
+{
+    static float[][] chart =
+    {
+                                      //FIRE,WATER,ELECT,AIR,EARTH,LIGHT,DARK
+        /*FIRE*/        new float [] { 1f,   1f,   1f,   1f, 2f,   1f,   1f},
+        /*WATER*/       new float [] { 2f,   1f,   1f,   1f, 1f,   1f,   1f},
+        /*ELECTRIC*/    new float [] { 1f,   2f,   1f,   1f, 1f,   1f,   1f},
+        /*AIR*/         new float [] { 1f,   1f,   2f,   1f, 1f,   1f,   1f},
+        /*EARTH*/       new float [] { 1f,   1f,   1f,   2f, 1f,   1f,   1f},
+        /*LIGHT*/       new float [] { 2f,   2f,   2f,   2f, 2f,   1f,   1f},
+        /*DARK*/        new float [] { 2f,   2f,   2f,   2f, 2f,   1f,   1f},
+    };
+
+    public static float GetEffectiveness(elements ATK_Element,elements DEF_Element)
+    {
+        if (ATK_Element == elements.None || DEF_Element == elements.None)
+            return 1;
+
+        int row = (int)ATK_Element - 1;
+        int col = (int)DEF_Element - 1;
+
+        Debug.Log(chart[row][col]);
+        Debug.Log(row);
+        Debug.Log(col);
+
+        return chart[row][col];
+    }
 }

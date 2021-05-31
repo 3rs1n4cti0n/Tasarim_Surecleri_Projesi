@@ -57,4 +57,46 @@ public class TerasCalcs
         get { return Mathf.FloorToInt((_baseTeras.Health * level) / 30f) + 5; }
     }
     #endregion
+
+    public DamageDetails TakeDamage(SkillCalc skill, TerasCalcs attacker)
+    {
+        float critical = 1f;
+        if (Random.value * 100f <= 6.25)
+            critical = 2f;
+
+        float element = ElementEffectiveness.GetEffectiveness(skill.baseSkill.SkillElement, attacker._baseTeras.FirstElement) * ElementEffectiveness.GetEffectiveness(skill.baseSkill.SkillElement, attacker._baseTeras.SecondElement);
+
+        var DMG_Details = new DamageDetails()
+        {
+            Critical = critical,
+            ElementEffectiveness = element,
+            Fainted = false
+        };
+
+        float modifiers = 1 * element * critical;
+        float a = (2 * attacker.level + 10) / 250f;
+        float d = a * skill.baseSkill.Damage * ((float)attacker._baseTeras.Attack / this._baseTeras.Defense);
+        int damage = Mathf.FloorToInt(d * modifiers);
+
+        Health -= damage;
+        if(Health <= 0)
+        {
+            Health = 0;
+            DMG_Details.Fainted = true;
+        }
+        return DMG_Details;
+    }
+
+    public SkillCalc RandomSkill()
+    {
+        int r = Random.Range(0, Skills.Count);
+        return Skills[r];
+    }
+}
+
+public class DamageDetails
+{
+    public bool Fainted { get; set; }
+    public float Critical { get; set; }
+    public float ElementEffectiveness { get; set; }
 }

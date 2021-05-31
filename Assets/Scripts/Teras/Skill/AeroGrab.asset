@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: AeroGrab
   description: 
-  skillElement: 0
+  skillElement: 4
   damage: 60
   accuracy: 100
   useLeft: 15
