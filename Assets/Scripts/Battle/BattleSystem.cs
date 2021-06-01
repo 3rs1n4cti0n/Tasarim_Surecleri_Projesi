@@ -38,6 +38,8 @@ public class BattleSystem : MonoBehaviour
     // state of battle
     BattleState state;
 
+    [SerializeField] PartyScreen partyScreen;
+
     // indexes for current action and skill
     int currentAction;
     int currentSkill;
@@ -65,6 +67,8 @@ public class BattleSystem : MonoBehaviour
         enemyUnit.Setup(wild);
         enemyHUD.setData(enemyUnit.teras);
 
+        partyScreen.Init();
+
         // set skills of player
         dialogBox.SetSkillNames(playerUnit.teras.Skills);
 
@@ -88,7 +92,8 @@ public class BattleSystem : MonoBehaviour
 
     void OpenPartyScreen()
     {
-        // ADD PARTY SCREEN
+        partyScreen.gameObject.SetActive(true);
+        partyScreen.SetPartyData(playersParty.Party_List);
     }
 
     // function for player teras to use a skill
