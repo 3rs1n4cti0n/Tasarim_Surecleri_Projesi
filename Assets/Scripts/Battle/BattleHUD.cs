@@ -22,8 +22,8 @@ public class BattleHUD : MonoBehaviour
         _teras = teras;
 
         nameText.text = teras._baseTeras.Name;
-        levelText.text = "Level: " + teras.level;
-        HealthBar.SetHPslowly((float) teras.Health / teras.CalculateMaxHealthStat);
+        levelText.text = "Level: " + teras.Level;
+        HealthBar.setHealth((float) teras.Health / teras.CalculateMaxHealthStat);
     }
 
     // updates health bar slowly

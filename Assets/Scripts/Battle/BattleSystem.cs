@@ -42,11 +42,16 @@ public class BattleSystem : MonoBehaviour
     int currentAction;
     int currentSkill;
 
+    TerasParty playersParty;
+    TerasCalcs wild;
+
     #endregion
 
     // When the object is created sets up UI for battle
-    public void StartBattle()
+    public void StartBattle(TerasParty PLAYER, TerasCalcs WILD_TERAS)
     {
+        playersParty = PLAYER;
+        wild = WILD_TERAS;
         StartCoroutine(SetupBattle());
     }
 
@@ -54,10 +59,10 @@ public class BattleSystem : MonoBehaviour
     public IEnumerator SetupBattle()
     {
         // setup player
-        playerUnit.Setup();
+        playerUnit.Setup(playersParty.GetHealthyTeras());
         playerHUD.setData(playerUnit.teras);
         // setup enemy
-        enemyUnit.Setup();
+        enemyUnit.Setup(wild);
         enemyHUD.setData(enemyUnit.teras);
 
         // set skills of player
@@ -81,6 +86,11 @@ public class BattleSystem : MonoBehaviour
         dialogBox.EnableActionSelector(true);
     }
 
+    void OpenPartyScreen()
+    {
+        // ADD PARTY SCREEN
+    }
+
     // function for player teras to use a skill
     void PlayerSkill()
     {
@@ -92,6 +102,7 @@ public class BattleSystem : MonoBehaviour
         // show skill selector
         dialogBox.EnableSkillSelector(true);
     }
+
     // coroutine to deal damage, take damage, play battle animations for player teras
     IEnumerator UseSkill()
     {
@@ -144,7 +155,26 @@ public class BattleSystem : MonoBehaviour
             playerUnit.FaintAnim();
 
             yield return new WaitForSeconds(2f);
-            OnBattleOver(false);
+            var nextTeras = playersParty.GetHealthyTeras();
+            if(nextTeras != null)
+            {
+                // setup player
+                playerUnit.Setup(nextTeras);
+                playerHUD.setData(nextTeras);
+
+                // set skills of player
+                dialogBox.SetSkillNames(nextTeras.Skills);
+
+                // encounter message
+                yield return StartCoroutine(dialogBox.TypeDialog($"Fight {nextTeras._baseTeras.Name}!"));
+
+                // action selection
+                PlayerAction();
+            }
+            else
+            {
+                OnBattleOver(false);
+            }
         }
         // otherwise it is players' turn to attack
         else
@@ -183,16 +213,17 @@ public class BattleSystem : MonoBehaviour
     void ActionSelectionHandler()
     {
         //choosing a new action
-        if(Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            if (currentAction < 1)
-                ++currentAction;
-        }
-        else if(Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            if (currentAction > 0)
-                --currentAction;
-        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+            ++currentAction;
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+            --currentAction;
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+            currentAction += 2;
+        else if (Input.GetKeyDown(KeyCode.UpArrow))
+            currentAction -= 2;
+
+        // limit it to 0-3 index
+        currentAction = Mathf.Clamp(currentAction, 0, 3);
 
         dialogBox.UpdateActionSelection(currentAction);
 
@@ -205,7 +236,16 @@ public class BattleSystem : MonoBehaviour
             }
             else if (currentAction == 1)
             {
-
+                // items
+            }
+            else if (currentAction == 2)
+            {
+                // party
+                OpenPartyScreen();
+            }
+            else if (currentAction == 3)
+            {
+                // run
             }
         }
     }
@@ -215,15 +255,13 @@ public class BattleSystem : MonoBehaviour
     {
         // choosing a skill
         if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
             if (currentSkill < playerUnit.teras.Skills.Count - 1)
                 ++currentSkill;
-        }
         else if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            if (currentSkill > 0)
                 --currentSkill;
-        }
+
+        currentSkill = Mathf.Clamp(currentSkill, 0, playerUnit.teras.Skills.Count);
+
         dialogBox.UpdateSkillSelection(currentSkill,playerUnit.teras.Skills[currentSkill]);
 
         // handle input
@@ -235,6 +273,11 @@ public class BattleSystem : MonoBehaviour
             dialogBox.EnableDialogText(true);
             // use skill
             StartCoroutine(UseSkill());
+        }else if (Input.GetKeyDown(KeyCode.R))
+        {
+            dialogBox.EnableSkillSelector(false);
+            dialogBox.EnableDialogText(true);
+            PlayerAction();
         }
     }
 }
