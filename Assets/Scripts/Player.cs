@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Player : MonoBehaviour
 {
     #region data
     // how fast the player will move per DeltaTime
     public float moveSpeed;
+
+    // event for GameController (Observer design patter)
+    public event Action OnEncounter;
 
     // Layers
     public LayerMask solid;
@@ -31,7 +35,7 @@ public class Player : MonoBehaviour
 
     // Update is called once per frame
     // checks for inputs
-    void Update()
+    public void HandleUpdate()
     {
         if(!isMoving)
         {
@@ -93,9 +97,12 @@ public class Player : MonoBehaviour
     {
         if(Physics2D.OverlapCircle(transform.position,0.2f,grass) != null)
         {
-            if(Random.Range(1,101)<10)
+            if(UnityEngine.Random.Range(1,101)<10)
             {
-                Debug.Log("Encountered a wild Teras!");
+                // set isMoving to false to the player isn't moving in the background
+                animator.SetBool("isMoving",false);
+                // start encounter
+                OnEncounter();
             }
         }
     }
