@@ -39,7 +39,7 @@ public class TerasCalcs
         }
     }
 
-    #region Calculations
+    #region LevelStatCalculations
     public int CalculateAttackStat
     {
         get{ return Mathf.FloorToInt((_baseTeras.Attack * level) / 30f) + 2; }
@@ -58,14 +58,18 @@ public class TerasCalcs
     }
     #endregion
 
+    // Function to take damage
     public DamageDetails TakeDamage(SkillCalc skill, TerasCalcs attacker)
     {
+        // check for critical hit
         float critical = 1f;
         if (Random.value * 100f <= 6.25)
             critical = 2f;
 
+        // check element effectiveness
         float element = ElementEffectiveness.GetEffectiveness(skill.baseSkill.SkillElement, attacker._baseTeras.FirstElement) * ElementEffectiveness.GetEffectiveness(skill.baseSkill.SkillElement, attacker._baseTeras.SecondElement);
 
+        // set details of damage
         var DMG_Details = new DamageDetails()
         {
             Critical = critical,
@@ -73,12 +77,16 @@ public class TerasCalcs
             Fainted = false
         };
 
+        // calculate damage
         float modifiers = 1 * element * critical;
         float a = (2 * attacker.level + 10) / 250f;
         float d = a * skill.baseSkill.Damage * ((float)attacker._baseTeras.Attack / this._baseTeras.Defense);
         int damage = Mathf.FloorToInt(d * modifiers);
 
+        // substract health
         Health -= damage;
+
+        // check if the teras fainted
         if(Health <= 0)
         {
             Health = 0;
@@ -86,14 +94,16 @@ public class TerasCalcs
         }
         return DMG_Details;
     }
-
+    // uses a random skill
     public SkillCalc RandomSkill()
     {
+        // return random index of skill
         int r = Random.Range(0, Skills.Count);
         return Skills[r];
     }
 }
 
+// class to check the details of damage
 public class DamageDetails
 {
     public bool Fainted { get; set; }

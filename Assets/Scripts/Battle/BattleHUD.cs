@@ -26,6 +26,7 @@ public class BattleHUD : MonoBehaviour
         HealthBar.SetHPslowly((float) teras.Health / teras.CalculateMaxHealthStat);
     }
 
+    // updates health bar slowly
     public IEnumerator UpdateHP()
     {
         yield return HealthBar.SetHPslowly((float)_teras.Health / _teras.CalculateMaxHealthStat);

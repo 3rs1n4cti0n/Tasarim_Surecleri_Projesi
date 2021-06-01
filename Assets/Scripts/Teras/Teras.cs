@@ -87,6 +87,7 @@ public class SkillSet
     [SerializeField] SkillBase skillBase;
     [SerializeField] int level;
 
+    // getters
     public SkillBase SkillBase
     {
         get { return skillBase; }
@@ -124,14 +125,19 @@ public class ElementEffectiveness
         /*DARK*/        new float [] { 2f,   2f,   2f,   2f, 2f,   1f,   1f},
     };
 
+    // gets row and col and returns value in table chart for multiplication
     public static float GetEffectiveness(elements ATK_Element,elements DEF_Element)
     {
+        // return neutral multiplier if there is no element on the skill
+        // or the defender does not have an element
         if (ATK_Element == elements.None || DEF_Element == elements.None)
             return 1;
 
+        // get row and column
         int row = (int)ATK_Element - 1;
         int col = (int)DEF_Element - 1;
 
+        // debug to check if it returns correct multiplier
         Debug.Log(chart[row][col]);
         Debug.Log(row);
         Debug.Log(col);
