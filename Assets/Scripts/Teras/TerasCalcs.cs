@@ -2,15 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class TerasCalcs
 {
     #region data
 
+    [SerializeField] Teras _base;
+    [SerializeField] int level;
+
     // main teras that is used for fighting
-    public Teras _baseTeras { get; set; }
+    public Teras _baseTeras {
+        get
+        {
+            return _base;
+        }
+    }
 
     // teras level
-    public int level { get; set; }
+    public int Level {
+        get
+        {
+            return level;
+        }
+    }
 
     // current health to calculate when it will go to zero
     public int Health { get; set; }
@@ -21,10 +35,8 @@ public class TerasCalcs
     #endregion
 
     // Initialize teras, level, current health
-    public TerasCalcs(Teras tBase,int tLevel)
+    public void Init()
     {
-        _baseTeras = tBase;
-        level = tLevel;
         Health = CalculateMaxHealthStat;
         
         Skills = new List<SkillCalc>();
@@ -80,7 +92,7 @@ public class TerasCalcs
         // calculate damage
         float modifiers = 1 * element * critical;
         float a = (2 * attacker.level + 10) / 250f;
-        float d = a * skill.baseSkill.Damage * ((float)attacker._baseTeras.Attack / this._baseTeras.Defense);
+        float d = a * skill.baseSkill.Damage * ((float)attacker._baseTeras.Attack / _baseTeras.Defense);
         int damage = Mathf.FloorToInt(d * modifiers);
 
         // substract health

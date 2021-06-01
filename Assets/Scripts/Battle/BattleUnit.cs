@@ -8,9 +8,6 @@ public class BattleUnit : MonoBehaviour
 {
     #region data
 
-    [SerializeField] Teras _base;
-    [SerializeField] int level;
-
     // to check if the teras belongs to player
     [SerializeField] bool isPlayerUnit;
 
@@ -30,9 +27,9 @@ public class BattleUnit : MonoBehaviour
     #endregion
 
     // sets images for enemy or player teras
-    public void Setup()
+    public void Setup(TerasCalcs terasSetup)
     {
-        teras = new TerasCalcs(_base, level);
+        teras = terasSetup;
 
         // set image
         if (isPlayerUnit)

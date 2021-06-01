@@ -37,8 +37,11 @@ public class GameController : MonoBehaviour
         // change current camera to battle by disabling main world camera
         worldCamera.gameObject.SetActive(false);
 
+        var playerParty = _player.GetComponent<TerasParty>();
+        var wild = FindObjectOfType<MapArea>().GetComponent<MapArea>().GetRandomWildTeras();
+
         // start the battle
-        _battleSystem.StartBattle();
+        _battleSystem.StartBattle(playerParty,wild);
     }
 
     // ends battle and gives control to main world

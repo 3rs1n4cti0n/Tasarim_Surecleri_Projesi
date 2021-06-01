@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-public class BattleHUD : MonoBehaviour
+
+public class PartyMemberUI : MonoBehaviour
 {
     #region data
-    
+
     // to set up name and level in UI
     [SerializeField] TextMeshProUGUI nameText;
     [SerializeField] TextMeshProUGUI levelText;
@@ -21,14 +22,8 @@ public class BattleHUD : MonoBehaviour
     {
         _teras = teras;
 
-        nameText.text = teras._baseTeras.Name;
-        levelText.text = "Level: " + teras.Level;
-        HealthBar.setHealth((float) teras.Health / teras.CalculateMaxHealthStat);
-    }
-
-    // updates health bar slowly
-    public IEnumerator UpdateHP()
-    {
-        yield return HealthBar.SetHPslowly((float)_teras.Health / _teras.CalculateMaxHealthStat);
+        nameText.text = _teras._baseTeras.Name;
+        levelText.text = "Level: " + _teras.Level;
+        HealthBar.setHealth((float)_teras.Health / _teras.CalculateMaxHealthStat);
     }
 }
