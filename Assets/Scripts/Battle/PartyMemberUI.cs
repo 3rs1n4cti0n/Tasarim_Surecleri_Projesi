@@ -14,6 +14,8 @@ public class PartyMemberUI : MonoBehaviour
     // to set health bar
     [SerializeField] HPbarScript HealthBar;
 
+    [SerializeField] Color HighlightColor;
+
     TerasCalcs _teras;
     #endregion
 
@@ -25,5 +27,13 @@ public class PartyMemberUI : MonoBehaviour
         nameText.text = _teras._baseTeras.Name;
         levelText.text = "Level: " + _teras.Level;
         HealthBar.setHealth((float)_teras.Health / _teras.CalculateMaxHealthStat);
+    }
+
+    public void HighlightSelectedMember(bool selected)
+    {
+        if (selected)
+            nameText.color = HighlightColor;
+        else
+            nameText.color = Color.black;
     }
 }

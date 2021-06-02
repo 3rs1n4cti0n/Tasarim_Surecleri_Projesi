@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Teras", menuName ="Teras/New Teras")]
+[CreateAssetMenu(fileName = "Teras", menuName = "Teras/New Teras")]
 public class Teras : ScriptableObject
 {
     #region data
     /* SerializeField makes it so that we can see the data in the inspector */
-    
+
     [SerializeField] string name;
-    
+
     [TextArea]
     [SerializeField] string description;
 
@@ -115,14 +115,14 @@ public class ElementEffectiveness
 {
     static float[][] chart =
     {
-                                      //FIRE,WATER,ELECT,AIR,EARTH,LIGHT,DARK
-        /*FIRE*/        new float [] { 1f,   1f,   1f,   1f, 2f,   1f,   1f},
-        /*WATER*/       new float [] { 2f,   1f,   1f,   1f, 1f,   1f,   1f},
-        /*ELECTRIC*/    new float [] { 1f,   2f,   1f,   1f, 1f,   1f,   1f},
-        /*AIR*/         new float [] { 1f,   1f,   2f,   1f, 1f,   1f,   1f},
-        /*EARTH*/       new float [] { 1f,   1f,   1f,   2f, 1f,   1f,   1f},
-        /*LIGHT*/       new float [] { 2f,   2f,   2f,   2f, 2f,   1f,   1f},
-        /*DARK*/        new float [] { 2f,   2f,   2f,   2f, 2f,   1f,   1f},
+                                      //FIRE,WATER,ELECT,AIR,  EARTH,LIGHT,DARK
+        /*FIRE*/        new float [] { 1f,   0.5f, 1f,   1f,   2f,   1f,   1f},
+        /*WATER*/       new float [] { 2f,   1f,   0.5f, 1f,   1f,   1f,   1f},
+        /*ELECTRIC*/    new float [] { 1f,   2f,   1f,   0.5f, 1f,   1f,   1f},
+        /*AIR*/         new float [] { 1f,   1f,   2f,   1f,   0.5f, 1f,   1f},
+        /*EARTH*/       new float [] { 0.5f, 1f,   1f,   2f,   1f,   1f,   1f},
+        /*LIGHT*/       new float [] { 2f,   2f,   2f,   2f,   2f,   1f,   1f},
+        /*DARK*/        new float [] { 2f,   2f,   2f,   2f,   2f,   1f,   1f},
     };
 
     // gets row and col and returns value in table chart for multiplication
@@ -138,10 +138,16 @@ public class ElementEffectiveness
         int col = (int)DEF_Element - 1;
 
         // debug to check if it returns correct multiplier
-        Debug.Log(chart[row][col]);
         Debug.Log(row);
         Debug.Log(col);
 
         return chart[row][col];
     }
+}
+
+public enum Stat
+{
+    attack,
+    defense,
+    speed
 }
