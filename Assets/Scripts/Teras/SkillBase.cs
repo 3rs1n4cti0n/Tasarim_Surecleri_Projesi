@@ -25,6 +25,11 @@ public class SkillBase : ScriptableObject
     // how many times it can be used
     [SerializeField] int useLeft;
 
+    [SerializeField] SkillCategory category;
+
+    [SerializeField] SkillEffects effects;
+    [SerializeField] SkillTarget skillTarget;
+
     #endregion
 
     #region getters
@@ -52,5 +57,52 @@ public class SkillBase : ScriptableObject
     {
         get { return useLeft; }
     }
+    public SkillCategory Category
+    {
+        get { return category; }
+    }
+    public SkillTarget SkillTarget
+    {
+        get { return skillTarget; }
+    }
+    public SkillEffects Effects
+    {
+        get { return effects; }
+    }
     #endregion
+}
+
+[System.Serializable]
+public class SkillEffects
+{
+    [SerializeField] List<StatBoost> boosts;
+    [SerializeField] ConditionID status;
+    public List<StatBoost> Boosts
+    {
+        get { return boosts; }
+    }
+
+    public ConditionID Status
+    {
+        get { return status; }
+    }
+}
+
+[System.Serializable]
+public class StatBoost
+{
+    public Stat stat;
+    public int boost;
+}
+
+public enum SkillCategory
+{
+    Damaging,
+    Status
+}
+
+public enum SkillTarget
+{
+    self,
+    target
 }

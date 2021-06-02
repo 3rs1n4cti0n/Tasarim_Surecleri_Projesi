@@ -15,6 +15,12 @@ MonoBehaviour:
   name: Roar
   description: 
   skillElement: 0
-  damage: 30
+  damage: 0
   accuracy: 100
   useLeft: 20
+  category: 1
+  effects:
+    boosts:
+    - stat: 0
+      boost: -2
+  skillTarget: 1

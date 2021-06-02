@@ -11,6 +11,17 @@ public class BattleUnit : MonoBehaviour
     // to check if the teras belongs to player
     [SerializeField] bool isPlayerUnit;
 
+    [SerializeField] BattleHUD hud;
+
+    public BattleHUD Hud
+    {
+        get { return hud; }
+    }
+    public bool IsPlayerUnit
+    {
+        get{ return isPlayerUnit; }
+    }
+
     Vector3 originalPos;
     Color originalColor;
 
@@ -18,14 +29,14 @@ public class BattleUnit : MonoBehaviour
     public TerasCalcs teras { get; set; }
 
     Image image;
+
+    #endregion
     private void Awake()
     {
         image = GetComponent<Image>();
         originalPos = image.transform.localPosition;
         originalColor = image.color;
     }
-    #endregion
-
     // sets images for enemy or player teras
     public void Setup(TerasCalcs terasSetup)
     {
@@ -38,6 +49,8 @@ public class BattleUnit : MonoBehaviour
             image.sprite = teras._baseTeras.FrontSprite;
 
         image.color = originalColor;
+
+        hud.setData(terasSetup);
 
         EnterToBattleAnim();
     }
