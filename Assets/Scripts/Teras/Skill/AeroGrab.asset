@@ -18,3 +18,8 @@ MonoBehaviour:
   damage: 60
   accuracy: 100
   useLeft: 15
+  category: 0
+  effects:
+    boosts: []
+    status: 0
+  skillTarget: 1

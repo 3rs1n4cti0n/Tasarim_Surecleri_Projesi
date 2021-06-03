@@ -7,14 +7,22 @@ public class ConditionsDB
     public static Dictionary<ConditionID, Condition> Conditions { get; set; } = new Dictionary<ConditionID, Condition>()
     {
         {
-            ConditionID.poison, new Condition()
+            ConditionID.poison, 
+            new Condition(){
+                Name="Poison",
+                StatMessage = "has been poisoned.",
+                OnAfterTurn = (TerasCalcs teras) =>
+                {
+                    teras.UpdateHP(teras.CalculateMaxHealthStat / 8);
+                    teras.StatusChanges.Enqueue($"{teras._baseTeras.Name} took damage due to poison!");
+                }
+            
+            }
+        },
         {
-            Name="Poison",
-            StatMessage = "has been poisoned."
-        }},
-        {
-            ConditionID.none, new Condition()
-        {
+            ConditionID.none, 
+            new Condition()
+            {
             Name="",
             StatMessage = ""
         }}

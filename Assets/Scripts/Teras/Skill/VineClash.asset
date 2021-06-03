@@ -22,4 +22,4 @@ MonoBehaviour:
   effects:
     boosts: []
     status: 0
-  skillTarget: 0
+  skillTarget: 1

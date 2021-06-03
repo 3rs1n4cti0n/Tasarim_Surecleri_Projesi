@@ -77,6 +77,8 @@ public class BattleSystem : MonoBehaviour
         // encounter message
         yield return StartCoroutine(dialogBox.TypeDialog($"Encountered a wild {enemyUnit.teras._baseTeras.Name}."));
 
+        PlayerAction();
+
         // action selection
         ChooseFirstTurn();
     }
@@ -150,10 +152,12 @@ public class BattleSystem : MonoBehaviour
 
         Debug.Log(skill.baseSkill.Category);
 
-        if (skill.baseSkill.Category.CompareTo(SkillCategory.Status) > 0)
+        // this is skipped no matter the condition
+        if (skill.baseSkill.Category == SkillCategory.Status)
         {
-            RunSkillEffects(skill, source.teras, target.teras);
+            StartCoroutine(RunSkillEffects(skill, source.teras, target.teras));
         }
+
         if (skill.baseSkill.Category.CompareTo(SkillCategory.Status) <= 0)
         {
             var damageDetails = target.teras.TakeDamage(skill, source.teras);
@@ -162,6 +166,20 @@ public class BattleSystem : MonoBehaviour
         }
         // if the opposing teras fainted make battle over event true to end battle
         if (target.teras.Health <= 0)
+        {
+            yield return dialogBox.TypeDialog($"{target.teras._baseTeras.Name} fainted");
+            target.FaintAnim();
+
+            yield return new WaitForSeconds(2f);
+
+            CheckBattleOver(target);
+        }
+        // damage check for poison
+        source.teras.OnAfterTurn();
+        yield return ShowStatusChanges(source.teras);
+        yield return source.Hud.UpdateHP();
+
+        if (source.teras.Health <= 0)
         {
             yield return dialogBox.TypeDialog($"{target.teras._baseTeras.Name} fainted");
             target.FaintAnim();
