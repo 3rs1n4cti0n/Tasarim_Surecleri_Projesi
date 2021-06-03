@@ -19,13 +19,13 @@ MonoBehaviour:
   firstElement: 4
   secondElement: 0
   health: 100
-  attack: 90
-  defense: 90
-  speed: 90
+  attack: 100
+  defense: 100
+  speed: 110
   skillSets:
-  - skillBase: {fileID: 11400000, guid: 3a11bf3c8dfb79849a1bd94a17c3ad2a, type: 2}
-    level: 3
-  - skillBase: {fileID: 11400000, guid: 2562bad27f1e86f408594039a5fe995b, type: 2}
+  - skillBase: {fileID: 11400000, guid: 14ebacad4a2b41e40af8631ce727dfa2, type: 2}
+    level: 1
+  - skillBase: {fileID: 11400000, guid: 14ebacad4a2b41e40af8631ce727dfa2, type: 2}
     level: 5
-  - skillBase: {fileID: 11400000, guid: 78692d125ed36d54db0b53b5ee846a7e, type: 2}
-    level: 7
+  - skillBase: {fileID: 11400000, guid: 14ebacad4a2b41e40af8631ce727dfa2, type: 2}
+    level: 10

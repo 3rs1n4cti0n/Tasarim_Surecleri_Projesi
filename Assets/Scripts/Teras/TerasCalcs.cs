@@ -15,6 +15,8 @@ public class TerasCalcs
     public Queue<string> StatusChanges { get; private set; } = new Queue<string>();
     public Condition Status { get; private set; }
 
+    public bool HealthChanged { get; set; }
+
     // main teras that is used for fighting
     public Teras _baseTeras {
         get
@@ -163,12 +165,8 @@ public class TerasCalcs
         // substract health
         this.Health -= damage;
 
-        // check if the teras fainted
-        if(Health <= 0)
-        {
-            this.Health = 0;
-            DMG_Details.Fainted = true;
-        }
+        UpdateHP(damage);
+
         return DMG_Details;
     }
     // uses a random skill
@@ -182,6 +180,18 @@ public class TerasCalcs
     public void OnBattleOver()
     {
         ResetStatBoost();
+    }
+
+    public void UpdateHP(int damage)
+    {
+        Health = Mathf.Clamp(Health - damage, 0, CalculateMaxHealthStat);
+        HealthChanged = true;
+    }
+
+    public void OnAfterTurn()
+    {
+        // only call on after if either of them are not null
+        Status?.OnAfterTurn?.Invoke(this);
     }
 }
 

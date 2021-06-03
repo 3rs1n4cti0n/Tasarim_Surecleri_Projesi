@@ -6500,15 +6500,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   party_list:
   - _base: {fileID: 11400000, guid: 250bc9a2c135b41439b51c82b1f2f7d2, type: 2}
-    level: 10
-  - _base: {fileID: 11400000, guid: fd1296010e94b2946adda2956e4e00b0, type: 2}
-    level: 9
+    level: 20
   - _base: {fileID: 11400000, guid: 250bc9a2c135b41439b51c82b1f2f7d2, type: 2}
-    level: 9
-  - _base: {fileID: 11400000, guid: fd1296010e94b2946adda2956e4e00b0, type: 2}
-    level: 9
-  - _base: {fileID: 11400000, guid: 250bc9a2c135b41439b51c82b1f2f7d2, type: 2}
-    level: 9
+    level: 20
 --- !u!224 &1158003763 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4771363474891907501, guid: 41d36f01085f4c641884dfe00c9f5918, type: 3}
@@ -12521,9 +12515,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wildEncounters:
   - _base: {fileID: 11400000, guid: 250bc9a2c135b41439b51c82b1f2f7d2, type: 2}
-    level: 30
+    level: 10
+  - _base: {fileID: 11400000, guid: 8e8ae4cf9e2699d4c9267fda675edbb2, type: 2}
+    level: 10
   - _base: {fileID: 11400000, guid: fd1296010e94b2946adda2956e4e00b0, type: 2}
-    level: 30
+    level: 10
 --- !u!1 &2137229833
 GameObject:
   m_ObjectHideFlags: 0
