@@ -44,6 +44,9 @@ public class BattleDialogBox : MonoBehaviour
     public IEnumerator TypeDialog(string dialog)
     {
         dialogText.text = "";
+
+        Debug.Log(dialog);
+
         // for loop to write dialog string slowly
         foreach(var letter in dialog.ToCharArray())
         {

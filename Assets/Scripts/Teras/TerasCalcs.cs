@@ -14,6 +14,7 @@ public class TerasCalcs
     public Dictionary<Stat, int> BoostStats { get; private set; }
     public Queue<string> StatusChanges { get; private set; } = new Queue<string>();
     public Condition Status { get; private set; }
+    public int StatusTurns { get; set; }
 
     public bool HealthChanged { get; set; }
 
@@ -58,8 +59,7 @@ public class TerasCalcs
         StatCalculate();
 
         Health = CalculateMaxHealthStat;
-        if (Status == null)
-            Status = ConditionsDB.Conditions[ConditionID.none];
+       
         ResetStatBoost();
     }
 
@@ -135,6 +135,7 @@ public class TerasCalcs
     public void SetStatus(ConditionID conditionId)
     {
         Status = ConditionsDB.Conditions[conditionId];
+        Status?.OnStart?.Invoke(this);
         StatusChanges.Enqueue($"{_baseTeras.Name} {Status.StatMessage}!");
     }
     // Function to take damage
@@ -188,10 +189,24 @@ public class TerasCalcs
         HealthChanged = true;
     }
 
+    public bool OnBeforeMove()
+    {
+        if(Status?.OnPerformSkill != null)
+        {
+            return Status.OnPerformSkill(this);
+        }
+        return true;
+    }
+
     public void OnAfterTurn()
     {
         // only call on after if either of them are not null
         Status?.OnAfterTurn?.Invoke(this);
+    }
+
+    public void CureStatusCondition()
+    {
+        Status = null;
     }
 }
 

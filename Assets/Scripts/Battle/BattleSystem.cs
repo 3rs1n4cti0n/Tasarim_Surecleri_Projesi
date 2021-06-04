@@ -142,6 +142,14 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator RunSkill(BattleUnit source, BattleUnit target, SkillCalc skill)
     {
+        bool canMove = source.teras.OnBeforeMove();
+
+        if(!canMove)
+        {
+            yield return ShowStatusChanges(source.teras);
+            yield break;
+        }
+
         skill.UseLeft--;
         yield return dialogBox.TypeDialog($"{source.teras._baseTeras.Name} used {skill.baseSkill.Name}");
 
@@ -150,14 +158,12 @@ public class BattleSystem : MonoBehaviour
 
         target.GetHitAnim();
 
-        Debug.Log(skill.baseSkill.Category);
-
-        // this is skipped no matter the condition
+        // Check for status condition
         if (skill.baseSkill.Category == SkillCategory.Status)
         {
-            StartCoroutine(RunSkillEffects(skill, source.teras, target.teras));
+            yield return RunSkillEffects(skill, source.teras, target.teras);
         }
-
+        // if its not a damaging move deal damage
         if (skill.baseSkill.Category.CompareTo(SkillCategory.Status) <= 0)
         {
             var damageDetails = target.teras.TakeDamage(skill, source.teras);
