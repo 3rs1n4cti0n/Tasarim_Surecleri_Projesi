@@ -18,7 +18,7 @@ The project is Turn Based RPG game. Having elements of both.
 - [X] Create a Test World
 - [X] Create Monsters (Teras) which will be used in fighting
 - [X] Create Skills that can be used by the monsters
-- [ ] Add Combat System
+- [X] Add Combat System
 - [ ] Add Navigation Menu
 - [ ] Add Encyclopedia for Teras
 - [ ] Add Currently kept Teras
