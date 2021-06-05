@@ -10,22 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 77146a3ce11f4384e9f62400e03760e9, type: 3}
-  m_Name: Electric Shock
+  m_Name: Waste Turn
   m_EditorClassIdentifier: 
-  name: Electric Shock
+  name: Waste turn
   description: 
-  skillElement: 3
-  damage: 30
+  skillElement: 0
+  damage: 0
   accuracy: 100
-  alwaysHit: 0
-  useLeft: 20
+  alwaysHit: 1
+  useLeft: 999
   category: 0
   effects:
     boosts: []
     status: 0
-  secondarySkillEffects:
-  - boosts: []
-    status: 4
-    chance: 50
-    target: 1
+  secondarySkillEffects: []
   skillTarget: 1

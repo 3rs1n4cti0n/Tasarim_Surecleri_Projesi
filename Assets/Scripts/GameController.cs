@@ -17,6 +17,11 @@ public class GameController : MonoBehaviour
     GameState state;
     #endregion
 
+    private void Awake()
+    {
+        ConditionsDB.Init();
+    }
+
     // Observe events and call functions to give controls to either the player or battle
     private void Start()
     {

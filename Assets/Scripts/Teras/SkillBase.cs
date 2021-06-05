@@ -21,13 +21,14 @@ public class SkillBase : ScriptableObject
 
     // how accurate it is
     [SerializeField] int accuracy;
-
+    [SerializeField] bool alwaysHit;
     // how many times it can be used
     [SerializeField] int useLeft;
 
     [SerializeField] SkillCategory category;
 
     [SerializeField] SkillEffects effects;
+    [SerializeField] List<SecondarySkillEffects> secondarySkillEffects;
     [SerializeField] SkillTarget skillTarget;
 
     #endregion
@@ -69,6 +70,14 @@ public class SkillBase : ScriptableObject
     {
         get { return effects; }
     }
+    public bool AlwaysHit
+    {
+        get { return alwaysHit; }
+    }
+    public List<SecondarySkillEffects> SecondaryEffects
+    {
+        get { return secondarySkillEffects; }
+    }
     #endregion
 }
 
@@ -77,6 +86,7 @@ public class SkillEffects
 {
     [SerializeField] List<StatBoost> boosts;
     [SerializeField] ConditionID status;
+    [SerializeField] ConditionID volotileStatus;
     public List<StatBoost> Boosts
     {
         get { return boosts; }
@@ -85,6 +95,26 @@ public class SkillEffects
     public ConditionID Status
     {
         get { return status; }
+    }
+    public ConditionID VolotileStatus
+    {
+        get { return volotileStatus; }
+    }
+}
+
+[System.Serializable]
+public class SecondarySkillEffects : SkillEffects
+{
+    [SerializeField] int chance;
+    [SerializeField] SkillTarget target;
+
+    public int Chance
+    {
+        get { return chance; }
+    }
+    public SkillTarget Target
+    {
+        get { return target; }
     }
 }
 

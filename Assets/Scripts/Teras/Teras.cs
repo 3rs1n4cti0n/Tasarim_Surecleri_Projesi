@@ -149,5 +149,9 @@ public enum Stat
 {
     attack,
     defense,
-    speed
+    speed,
+
+    // not actual stats
+    accuracy,
+    evasion
 }
