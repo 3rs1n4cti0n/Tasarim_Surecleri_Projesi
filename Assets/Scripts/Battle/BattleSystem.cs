@@ -13,7 +13,7 @@ public enum BattleState
     // player skill select
     SkillSelection,
     // enemy skill select
-    UseSkill,
+    RunningTurn,
     // switch current battling teras
     PartyScreen,
     // battle is over
@@ -21,6 +21,8 @@ public enum BattleState
     // extra state for waiting
     Busy
 }
+
+public enum BattleAction { Skill,SwitchTeras,UseItem,Run}
 
 public class BattleSystem : MonoBehaviour
 {
@@ -39,6 +41,7 @@ public class BattleSystem : MonoBehaviour
 
     // state of battle
     BattleState state;
+    BattleState? previousState;
 
     [SerializeField] PartyScreen partyScreen;
 
@@ -75,12 +78,10 @@ public class BattleSystem : MonoBehaviour
         dialogBox.SetSkillNames(playerUnit.teras.Skills);
 
         // encounter message
-        yield return StartCoroutine(dialogBox.TypeDialog($"Encountered a wild {enemyUnit.teras._baseTeras.Name}."));
+        yield return StartCoroutine(dialogBox.TypeDialog($"Encountered a wild {enemyUnit.teras._baseTeras.Name}!"));
 
         PlayerAction();
-
-        // action selection
-        ChooseFirstTurn();
+        ActionSelectionHandler();
     }
 
     // function for selecting action
@@ -113,33 +114,6 @@ public class BattleSystem : MonoBehaviour
         dialogBox.EnableSkillSelector(true);
     }
 
-    // coroutine to deal damage, take damage, play battle animations for player teras
-    IEnumerator PlayerUseSkill()
-    {
-        state = BattleState.UseSkill;
-        
-        var skill = playerUnit.teras.Skills[currentSkill];
-        
-        yield return RunSkill(playerUnit,enemyUnit,skill);
-
-        // if runSkill didnt change state to BattleOver continue battle
-        if (state == BattleState.UseSkill)
-            StartCoroutine(EnemyUseSkill());
-    }
-    // coroutine to deal damage, take damage, play battle animations for enemy teras
-    IEnumerator EnemyUseSkill()
-    {
-        state = BattleState.UseSkill;
-
-        var skill = enemyUnit.teras.RandomSkill();
-
-        yield return RunSkill(enemyUnit, playerUnit, skill);
-
-        // if runSkill didnt change state to BattleOver continue battle
-        if (state == BattleState.UseSkill)
-            PlayerAction();
-    }
-
     IEnumerator RunSkill(BattleUnit source, BattleUnit target, SkillCalc skill)
     {
         bool canMove = source.teras.OnBeforeMove();
@@ -147,55 +121,81 @@ public class BattleSystem : MonoBehaviour
         if(!canMove)
         {
             yield return ShowStatusChanges(source.teras);
+            yield return source.Hud.UpdateHP();
             yield break;
         }
 
         skill.UseLeft--;
-        yield return dialogBox.TypeDialog($"{source.teras._baseTeras.Name} used {skill.baseSkill.Name}");
+        yield return dialogBox.TypeDialog($"{source.teras._baseTeras.Name} used {skill.baseSkill.Name}!");
 
-        source.AttackAnim();
-        yield return new WaitForSeconds(1f);
-
-        target.GetHitAnim();
-
-        // Check for status condition
-        if (skill.baseSkill.Category == SkillCategory.Status)
+        if (CheckAccHit(skill, source.teras, target.teras) == true)
         {
-            yield return RunSkillEffects(skill, source.teras, target.teras);
-        }
-        // if its not a damaging move deal damage
-        if (skill.baseSkill.Category.CompareTo(SkillCategory.Status) <= 0)
-        {
-            var damageDetails = target.teras.TakeDamage(skill, source.teras);
-            yield return target.Hud.UpdateHP();
-            yield return ShowDamageDetails(damageDetails);
-        }
-        // if the opposing teras fainted make battle over event true to end battle
-        if (target.teras.Health <= 0)
-        {
-            yield return dialogBox.TypeDialog($"{target.teras._baseTeras.Name} fainted");
-            target.FaintAnim();
+            source.AttackAnim();
+            yield return new WaitForSeconds(1f);
 
-            yield return new WaitForSeconds(2f);
+            target.GetHitAnim();
 
-            CheckBattleOver(target);
+            // Check for status condition
+            if (skill.baseSkill.Category == SkillCategory.Status)
+            {
+                yield return RunSkillEffects(skill.baseSkill.Effects, source.teras, target.teras,skill.baseSkill.SkillTarget);
+            }
+            // if its not a damaging move deal damage
+            if (skill.baseSkill.Category.CompareTo(SkillCategory.Status) <= 0)
+            {
+                var damageDetails = target.teras.TakeDamage(skill, source.teras);
+                yield return target.Hud.UpdateHP();
+                yield return ShowDamageDetails(damageDetails);
+            }
+
+            if(skill.baseSkill.SecondaryEffects != null && skill.baseSkill.SecondaryEffects.Count > 0 && target.teras.Health > 0)
+            {
+                foreach(var secondary in skill.baseSkill.SecondaryEffects)
+                {
+                    var random = UnityEngine.Random.Range(1,101);
+                    if (random <= secondary.Chance)
+                        yield return RunSkillEffects(secondary, source.teras, target.teras, secondary.Target);
+                }
+            }
+
+            // if the opposing teras fainted make battle over event true to end battle
+            if (target.teras.Health <= 0)
+            {
+                yield return dialogBox.TypeDialog($"{target.teras._baseTeras.Name} fainted!");
+                target.FaintAnim();
+
+                yield return new WaitForSeconds(2f);
+
+                CheckBattleOver(target);
+            }
         }
-        // damage check for poison
+        else
+        {
+            yield return dialogBox.TypeDialog($"{source.teras._baseTeras.Name} missed its attack!");
+        }
+
+    }
+    IEnumerator RunAfterTurn(BattleUnit source)
+    {
+        if (state == BattleState.BattleOver) yield break;
+
+        yield return new WaitUntil(()=> state == BattleState.RunningTurn);
+
+        // damage check for Status
         source.teras.OnAfterTurn();
         yield return ShowStatusChanges(source.teras);
         yield return source.Hud.UpdateHP();
 
         if (source.teras.Health <= 0)
         {
-            yield return dialogBox.TypeDialog($"{target.teras._baseTeras.Name} fainted");
-            target.FaintAnim();
+            yield return dialogBox.TypeDialog($"{source.teras._baseTeras.Name} fainted!");
+            source.FaintAnim();
 
             yield return new WaitForSeconds(2f);
 
-            CheckBattleOver(target);
+            CheckBattleOver(source);
         }
     }
-
     IEnumerator ShowStatusChanges(TerasCalcs teras)
     {
         while(teras.StatusChanges.Count > 0)
@@ -205,13 +205,12 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    IEnumerator RunSkillEffects(SkillCalc skill,TerasCalcs source, TerasCalcs target)
+    IEnumerator RunSkillEffects(SkillEffects effects,TerasCalcs source, TerasCalcs target, SkillTarget targetedAt)
     {
-        var effects = skill.baseSkill.Effects;
         // stat boosting
         if (effects.Boosts != null)
         {
-            if (skill.baseSkill.SkillTarget == SkillTarget.self)
+            if (targetedAt == SkillTarget.self)
                 source.ApplyBoost(effects.Boosts);
             else
                 target.ApplyBoost(effects.Boosts);
@@ -220,6 +219,12 @@ public class BattleSystem : MonoBehaviour
         if (effects.Status != ConditionID.none)
         {
             target.SetStatus(effects.Status);
+        }
+
+        //Volotile status condition
+        if (effects.VolotileStatus != ConditionID.none)
+        {
+            target.SetVolotileStatus(effects.VolotileStatus);
         }
 
         yield return ShowStatusChanges(source);
@@ -246,13 +251,6 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    void ChooseFirstTurn()
-    {
-        if (playerUnit.teras.CalculateSpeedStat >= enemyUnit.teras.CalculateSpeedStat)
-            ActionSelectionHandler();
-        else
-            StartCoroutine(EnemyUseSkill());
-    }
 
     void BattleOver(bool won)
     {
@@ -324,6 +322,7 @@ public class BattleSystem : MonoBehaviour
             else if (currentAction == 2)
             {
                 // party
+                previousState = state;
                 OpenPartyScreen();
             }
             else if (currentAction == 3)
@@ -354,7 +353,7 @@ public class BattleSystem : MonoBehaviour
             // enable dialog box
             dialogBox.EnableDialogText(true);
             // use skill
-            StartCoroutine(PlayerUseSkill());
+            StartCoroutine(RunTurns(BattleAction.Skill));
         }else if (Input.GetKeyDown(KeyCode.R))
         {
             dialogBox.EnableSkillSelector(false);
@@ -393,8 +392,17 @@ public class BattleSystem : MonoBehaviour
                 return;
             }
             partyScreen.gameObject.SetActive(false);
-            state = BattleState.Busy;
-            StartCoroutine(SwitchTeras(selectedMember));
+
+            if(previousState == BattleState.ActionSelection)
+            {
+                previousState = null;
+                StartCoroutine(RunTurns(BattleAction.SwitchTeras));
+            }
+            else
+            {
+                state = BattleState.Busy;
+                StartCoroutine(SwitchTeras(selectedMember));
+            }
         }
         else if (Input.GetKeyDown(KeyCode.R))
         {
@@ -405,10 +413,8 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator SwitchTeras(TerasCalcs nextTeras)
     {
-        bool isFainted = true;
         if (playerUnit.teras.Health > 0)
         {
-            isFainted = false;
             yield return dialogBox.TypeDialog($"Return {playerUnit.teras._baseTeras.Name}");
             playerUnit.FaintAnim();
             yield return new WaitForSeconds(2f);
@@ -419,13 +425,86 @@ public class BattleSystem : MonoBehaviour
         // set skills of player
         dialogBox.SetSkillNames(nextTeras.Skills);
 
-        // encounter message
         yield return StartCoroutine(dialogBox.TypeDialog($"Fight {nextTeras._baseTeras.Name}!"));
 
-        if (isFainted)
-            ChooseFirstTurn();
-        else
-            StartCoroutine(EnemyUseSkill());
+        state = BattleState.RunningTurn;
     }
 
+    bool CheckAccHit(SkillCalc skill,TerasCalcs source,TerasCalcs target)
+    {
+        if (skill.baseSkill.AlwaysHit == true)
+            return true;
+
+        float skillAccuracy = skill.baseSkill.Accuracy;
+
+        int accuracy = source.BoostStats[Stat.accuracy];
+        int evasion = target.BoostStats[Stat.evasion];
+
+        var boostValues = new float[] { 1f, 4f / 3f, 5f / 3f, 2f, 7f / 3f, 8f / 3f, 3f };
+
+        if (accuracy > 0)
+            skillAccuracy *= boostValues[accuracy];
+        else
+            skillAccuracy /= boostValues[-accuracy];
+
+        if (evasion > 0)
+            skillAccuracy /= boostValues[evasion];
+        else
+            skillAccuracy *= boostValues[-evasion];
+
+        return UnityEngine.Random.Range(1, 101) <= skillAccuracy;
+    }
+
+    IEnumerator RunTurns(BattleAction playerAction)
+    {
+        if (state == BattleState.BattleOver) yield break;
+
+        state = BattleState.RunningTurn;
+        if(playerAction == BattleAction.Skill)
+        {
+            playerUnit.teras.currentSkill = playerUnit.teras.Skills[currentSkill];
+            enemyUnit.teras.currentSkill = enemyUnit.teras.RandomSkill();
+
+            //check who goes first
+            bool playerfirst = playerUnit.teras.CalculateSpeedStat >= enemyUnit.teras.CalculateSpeedStat;
+
+            var firstUnit = (playerfirst) ? playerUnit : enemyUnit;
+            var secondUnit = (playerfirst) ? enemyUnit : playerUnit;
+
+            var secondTeras = secondUnit.teras;
+
+            //First turn
+            yield return RunSkill(firstUnit, secondUnit, firstUnit.teras.currentSkill);
+            yield return RunAfterTurn(firstUnit);
+            if(state == BattleState.BattleOver) yield break;
+
+            if (secondTeras.Health > 0)
+            {
+                //second turn
+                yield return RunSkill(secondUnit, firstUnit, secondUnit.teras.currentSkill);
+                yield return RunAfterTurn(secondUnit);
+                if (state == BattleState.BattleOver) yield break;
+            }
+        }
+        else
+        {
+            if(playerAction == BattleAction.SwitchTeras)
+            {
+                var selectedTeras = playersParty.Party_List[currentMember];
+                state = BattleState.Busy;
+                yield return SwitchTeras(selectedTeras);
+            }
+            // Enemy Turn
+            var enemySkill = enemyUnit.teras.RandomSkill();
+            yield return RunSkill(enemyUnit, playerUnit, enemySkill);
+            yield return RunAfterTurn(enemyUnit);
+            if (state == BattleState.BattleOver) yield break;
+        }
+
+        if (state != BattleState.BattleOver)
+        {
+            PlayerAction();
+            ActionSelectionHandler();
+        }
+    }
 }

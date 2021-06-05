@@ -16,7 +16,8 @@ MonoBehaviour:
   description: 
   skillElement: 0
   damage: 0
-  accuracy: 100
+  accuracy: 70
+  alwaysHit: 0
   useLeft: 20
   category: 1
   effects:

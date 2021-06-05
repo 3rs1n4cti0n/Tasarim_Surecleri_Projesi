@@ -15,7 +15,9 @@ public class TerasCalcs
     public Queue<string> StatusChanges { get; private set; } = new Queue<string>();
     public Condition Status { get; private set; }
     public int StatusTurns { get; set; }
-
+    public event System.Action OnStatusChange;
+    public int VolotileStatusTime { get; set; }
+    public Condition VolotileStatus { get; private set; }
     public bool HealthChanged { get; set; }
 
     // main teras that is used for fighting
@@ -40,6 +42,7 @@ public class TerasCalcs
     // skills that are known by teras
     public List<SkillCalc> Skills { get; set; }
 
+    public SkillCalc currentSkill { get; set; }
     #endregion
 
     // Initialize teras, level, current health
@@ -61,6 +64,8 @@ public class TerasCalcs
         Health = CalculateMaxHealthStat;
        
         ResetStatBoost();
+        Status = null;
+        VolotileStatus = null;
     }
 
     void ResetStatBoost()
@@ -69,7 +74,9 @@ public class TerasCalcs
         {
             {Stat.attack, 0},
             {Stat.defense, 0},
-            {Stat.speed, 0}
+            {Stat.accuracy, 0},
+            {Stat.evasion, 0},
+            {Stat.speed, 0},
         };
     }
     void StatCalculate()
@@ -79,7 +86,7 @@ public class TerasCalcs
         Stats.Add(Stat.defense, Mathf.FloorToInt((_baseTeras.Defense * level) / 30f) + 2);
         Stats.Add(Stat.speed, Mathf.FloorToInt((_baseTeras.Speed * level) / 30f) + 2);
 
-        CalculateMaxHealthStat = Mathf.FloorToInt((_baseTeras.Health * level) / 30f) + 5;
+        CalculateMaxHealthStat = Mathf.FloorToInt((_baseTeras.Health * level) / 30f) + 5 + Level;
     }
 
     int getStat(Stat stat)
@@ -134,9 +141,13 @@ public class TerasCalcs
     #endregion
     public void SetStatus(ConditionID conditionId)
     {
+        if (Status != null) return;
+
         Status = ConditionsDB.Conditions[conditionId];
         Status?.OnStart?.Invoke(this);
         StatusChanges.Enqueue($"{_baseTeras.Name} {Status.StatMessage}!");
+
+        OnStatusChange?.Invoke();
     }
     // Function to take damage
     public DamageDetails TakeDamage(SkillCalc skill, TerasCalcs attacker)
@@ -180,6 +191,7 @@ public class TerasCalcs
 
     public void OnBattleOver()
     {
+        VolotileStatus = null;
         ResetStatBoost();
     }
 
@@ -191,22 +203,50 @@ public class TerasCalcs
 
     public bool OnBeforeMove()
     {
+        bool canUseSkill = true;
         if(Status?.OnPerformSkill != null)
         {
-            return Status.OnPerformSkill(this);
+            if(!Status.OnPerformSkill(this))
+            {
+                canUseSkill = false;
+            }
         }
-        return true;
+
+        if (VolotileStatus?.OnPerformSkill != null)
+        {
+            if (!VolotileStatus.OnPerformSkill(this))
+            {
+                canUseSkill = false;
+            }
+        }
+
+        return canUseSkill;
     }
 
     public void OnAfterTurn()
     {
         // only call on after if either of them are not null
         Status?.OnAfterTurn?.Invoke(this);
+        VolotileStatus?.OnAfterTurn?.Invoke(this);
     }
 
     public void CureStatusCondition()
     {
         Status = null;
+        OnStatusChange?.Invoke();
+    }
+
+    public void SetVolotileStatus(ConditionID conditionId)
+    {
+        if (VolotileStatus != null) return;
+
+        VolotileStatus = ConditionsDB.Conditions[conditionId];
+        VolotileStatus?.OnStart?.Invoke(this);
+        StatusChanges.Enqueue($"{_baseTeras.Name} {VolotileStatus.StatMessage}!");
+    }
+    public void CureVolotileStatusCondition()
+    {
+        VolotileStatus = null;
     }
 }
 
