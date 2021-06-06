@@ -185,6 +185,7 @@ public class TerasCalcs
     // uses a random skill
     public SkillCalc RandomSkill()
     {
+        //TODO: add a skill when the enemy has no skill use left
         var skillWithUseLeft = Skills.Where(x => x.UseLeft > 0).ToList();
 
         // return random index of skill
