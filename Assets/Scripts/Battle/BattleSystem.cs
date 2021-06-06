@@ -348,6 +348,9 @@ public class BattleSystem : MonoBehaviour
         // handle input
         if (Input.GetKeyDown(KeyCode.E))
         {
+            var skill = playerUnit.teras.Skills[currentSkill];
+            if (skill.UseLeft == 0) return;
+
             // disable skill selection
             dialogBox.EnableSkillSelector(false);
             // enable dialog box
@@ -465,13 +468,21 @@ public class BattleSystem : MonoBehaviour
             playerUnit.teras.currentSkill = playerUnit.teras.Skills[currentSkill];
             enemyUnit.teras.currentSkill = enemyUnit.teras.RandomSkill();
 
+            int playerSkillPriority = playerUnit.teras.currentSkill.baseSkill.Priority;
+            int enemySkillPriority = enemyUnit.teras.currentSkill.baseSkill.Priority;
             //check who goes first
-            bool playerfirst = playerUnit.teras.CalculateSpeedStat >= enemyUnit.teras.CalculateSpeedStat;
+            
+            bool playerfirst = true;
+            if (enemySkillPriority > playerSkillPriority)
+                playerfirst = false;
+            else if (enemySkillPriority == playerSkillPriority)
+                playerfirst = playerUnit.teras.CalculateSpeedStat >= enemyUnit.teras.CalculateSpeedStat;
 
             var firstUnit = (playerfirst) ? playerUnit : enemyUnit;
             var secondUnit = (playerfirst) ? enemyUnit : playerUnit;
 
             var secondTeras = secondUnit.teras;
+
 
             //First turn
             yield return RunSkill(firstUnit, secondUnit, firstUnit.teras.currentSkill);

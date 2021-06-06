@@ -25,6 +25,8 @@ public class SkillBase : ScriptableObject
     // how many times it can be used
     [SerializeField] int useLeft;
 
+    [SerializeField] int priority;
+
     [SerializeField] SkillCategory category;
 
     [SerializeField] SkillEffects effects;
@@ -77,6 +79,10 @@ public class SkillBase : ScriptableObject
     public List<SecondarySkillEffects> SecondaryEffects
     {
         get { return secondarySkillEffects; }
+    }
+    public int Priority
+    {
+        get { return priority; }
     }
     #endregion
 }
