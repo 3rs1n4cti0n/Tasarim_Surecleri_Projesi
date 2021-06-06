@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     // Layers
     public LayerMask solid;
     public LayerMask grass;
+    public LayerMask interactables;
 
     // check for animation
     bool isMoving;
@@ -63,6 +64,11 @@ public class Player : MonoBehaviour
         }
         // For animations
         animator.SetBool("isMoving", isMoving);
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Interact();
+        }
     }
 
     // Move the player using Coroutine
@@ -85,7 +91,7 @@ public class Player : MonoBehaviour
     // check if the target tile is walkable
     private bool isWalkable(Vector3 targetPos)
     {
-        if(Physics2D.OverlapCircle(targetPos,0.1f,solid) != null)
+        if(Physics2D.OverlapCircle(targetPos,0.3f,solid | interactables) != null)
         {
             return false;
         }
@@ -106,4 +112,20 @@ public class Player : MonoBehaviour
             }
         }
     }
+
+    void Interact()
+    {
+        var faceDir = new Vector3(animator.GetFloat("X"), animator.GetFloat("Y"));
+        var interactPos = transform.position + faceDir;
+
+        //Debug.DrawLine(transform.position, interactPos, Color.black,0.5f);
+
+        var collider = Physics2D.OverlapCircle(interactPos, 0.3f, interactables);
+
+        if(collider != null)
+        {
+            collider.GetComponent<Interactable>()?.Interact();
+        }
+    }
+
 }
