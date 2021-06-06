@@ -6,39 +6,25 @@ using System;
 public class Player : MonoBehaviour
 {
     #region data
-    // how fast the player will move per DeltaTime
-    public float moveSpeed;
-
     // event for GameController (Observer design patter)
     public event Action OnEncounter;
-
-    // Layers
-    public LayerMask solid;
-    public LayerMask grass;
-    public LayerMask interactables;
-
-    // check for animation
-    bool isMoving;
-
     // check for input
     Vector2 input;
-    
     // to animate our player
-    Animator animator;
-
+    Character character;
     #endregion
 
     // initialize animator for animation of player
     public void Awake()
     {
-        animator = GetComponent<Animator>();
+        character = GetComponent<Character>();
     }
 
     // Update is called once per frame
     // checks for inputs
     public void HandleUpdate()
     {
-        if(!isMoving)
+        if(!character.isMoving)
         {
             input.x = Input.GetAxisRaw("Horizontal");
             input.y = Input.GetAxisRaw("Vertical");
@@ -47,23 +33,11 @@ public class Player : MonoBehaviour
 
             if(input != Vector2.zero)
             {
-                // give results to animator to show animation
-                animator.SetFloat("X", input.x);
-                animator.SetFloat("Y", input.y);
-
-                var targetPos = transform.position;
-                targetPos.x += input.x;
-                targetPos.y += input.y;
-
-                if (isWalkable(targetPos))
-                {
-                    // coroutine to move the player in the tilemap
-                    StartCoroutine(Move(targetPos));
-                }
+                StartCoroutine(character.Move(input,CheckForEncounters));
             }
         }
-        // For animations
-        animator.SetBool("isMoving", isMoving);
+
+        character.HandleUpdate();
 
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -71,42 +45,15 @@ public class Player : MonoBehaviour
         }
     }
 
-    // Move the player using Coroutine
-    IEnumerator Move(Vector3 targetPos)
-    {
-        isMoving = true;
-
-        while((targetPos - transform.position).sqrMagnitude > Mathf.Epsilon)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
-            yield return null;
-        }
-        transform.position = targetPos;
-
-        isMoving = false;
-
-        CheckForEncounters();
-    }
-
-    // check if the target tile is walkable
-    private bool isWalkable(Vector3 targetPos)
-    {
-        if(Physics2D.OverlapCircle(targetPos,0.3f,solid | interactables) != null)
-        {
-            return false;
-        }
-        return true;
-    }
-
     // function to check for encounters
     private void CheckForEncounters()
     {
-        if(Physics2D.OverlapCircle(transform.position,0.2f,grass) != null)
+        if(Physics2D.OverlapCircle(transform.position,0.1f,GameLayers.inst.GrassLayer) != null)
         {
             if(UnityEngine.Random.Range(1,101)<10)
             {
                 // set isMoving to false to the player isn't moving in the background
-                animator.SetBool("isMoving",false);
+                character.Animator.isMoving = false;
                 // start encounter
                 OnEncounter();
             }
@@ -115,12 +62,12 @@ public class Player : MonoBehaviour
 
     void Interact()
     {
-        var faceDir = new Vector3(animator.GetFloat("X"), animator.GetFloat("Y"));
+        var faceDir = new Vector3(character.Animator.X, character.Animator.Y);
         var interactPos = transform.position + faceDir;
 
         //Debug.DrawLine(transform.position, interactPos, Color.black,0.5f);
 
-        var collider = Physics2D.OverlapCircle(interactPos, 0.3f, interactables);
+        var collider = Physics2D.OverlapCircle(interactPos, 0.09f, GameLayers.inst.InteractablesLayer);
 
         if(collider != null)
         {

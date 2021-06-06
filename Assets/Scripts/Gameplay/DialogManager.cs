@@ -15,6 +15,8 @@ public class DialogManager : MonoBehaviour
     dialog Dialog;
     int currentLine;
     bool isTyping;
+    public bool isShowing;
+
     private void Awake()
     {
         Instance = this;
@@ -41,6 +43,7 @@ public class DialogManager : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         OnDialogOpen?.Invoke();
+        isShowing = true;
         this.Dialog = dialog;
         dialogBox.SetActive(true);
         StartCoroutine(TypeDialog(dialog.Lines[0]));
@@ -58,6 +61,7 @@ public class DialogManager : MonoBehaviour
             dialogText.text += letter;
             yield return new WaitForSeconds(1f / lettersPerSecond);
         }
+        isShowing = false;
         isTyping = false;
     }
 }
