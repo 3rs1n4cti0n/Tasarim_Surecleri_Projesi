@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -184,9 +185,11 @@ public class TerasCalcs
     // uses a random skill
     public SkillCalc RandomSkill()
     {
+        var skillWithUseLeft = Skills.Where(x => x.UseLeft > 0).ToList();
+
         // return random index of skill
-        int r = Random.Range(0, Skills.Count);
-        return Skills[r];
+        int r = Random.Range(0, skillWithUseLeft.Count);
+        return skillWithUseLeft[r];
     }
 
     public void OnBattleOver()

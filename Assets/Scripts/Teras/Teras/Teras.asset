@@ -23,7 +23,7 @@ MonoBehaviour:
   defense: 90
   speed: 90
   skillSets:
-  - skillBase: {fileID: 11400000, guid: 0bf16d3673ca86d46a888c19f6ae45dc, type: 2}
+  - skillBase: {fileID: 11400000, guid: 1ef392cfff8a1af48ab1e2b6e798fc2f, type: 2}
     level: 5
   - skillBase: {fileID: 11400000, guid: 3dede84f91a058b4fbce632b42049ee0, type: 2}
     level: 7

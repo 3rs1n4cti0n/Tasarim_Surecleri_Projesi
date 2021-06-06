@@ -5973,7 +5973,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   party_list:
-  - _base: {fileID: 11400000, guid: 250bc9a2c135b41439b51c82b1f2f7d2, type: 2}
+  - _base: {fileID: 11400000, guid: 8e8ae4cf9e2699d4c9267fda675edbb2, type: 2}
     level: 15
   - _base: {fileID: 11400000, guid: 250bc9a2c135b41439b51c82b1f2f7d2, type: 2}
     level: 15

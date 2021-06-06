@@ -101,6 +101,12 @@ public class BattleDialogBox : MonoBehaviour
         // update skill details
         useLeftText.text = $"Use Left: {skill.UseLeft}/{skill.baseSkill.UseLeft}";
         elementText.text = skill.baseSkill.SkillElement.ToString();
+
+        // visual feedback for player that has no use left
+        if (skill.UseLeft == 0)
+            useLeftText.color = Color.red;
+        else
+            useLeftText.color = Color.black;
     }
 
     // function to set skill names into textmesh
