@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum GameState { FreeRoam, Battle }
+public enum GameState { FreeRoam, Battle, Dialog }
 
 // class to check if we are in battle or not and give control battle or player (State Design Pattern)
 public class GameController : MonoBehaviour
@@ -29,6 +29,18 @@ public class GameController : MonoBehaviour
         _player.OnEncounter += StartBattle;
         // give it to battle
         _battleSystem.OnBattleOver += EndBattle;
+
+        // give control to dialogManager
+        DialogManager.Instance.OnDialogOpen += () =>
+        {
+            state = GameState.Dialog;
+        };
+        // give control back to player
+        DialogManager.Instance.OnDialogClose += () =>
+        {
+            if(state == GameState.Dialog)
+                state = GameState.FreeRoam;
+        };
     }
 
     // gives control to battle
@@ -71,6 +83,10 @@ public class GameController : MonoBehaviour
         else if (state == GameState.Battle)
         {
             _battleSystem.HandleUpdate();
+        }
+        else if(state == GameState.Dialog)
+        {
+            DialogManager.Instance.HandleUpdate();
         }
     }
 }
